@@ -58,9 +58,9 @@
         ```
         Once running you can ssh it using `vagrant ssh ansible-machine`
         
-2. Here i am using this public github.com repo `https://github.com/roychandrasekhar/CI-using-Jenkins-for-Docker/tree/main` for this demo. Its a flask API running in port 5000. Also it has Dockerfile in it so that it can be run as micro service.
-3. I am using my public `hub.docker.com` account to store the Docker image
-4.  Ok, now on your VM start Jenkins and configure it. It should be in `http://192.168.50.40:8080`
+2. Here i am using this private github.com repo `https://github.com/roychandrasekhar/flask-welcome` for this demo. Its a flask API running in port 5000. Also it has Dockerfile in it so that it can be run as micro service. *Docker file is provided here as a copy*
+3. I am using my public `hub.docker.com` account to store the Docker image. `https://hub.docker.com/repository/docker/roychandrasekhar/flask-welcome/general`
+4.  Ok, now in your VM start Jenkins and configure it. It should be in `http://192.168.50.40:8080`
 5. For secure access of your github private account i use SSH key base authentication method. And for this i update the `jenkins` service user in the server and create `id_rsa.pub` and add this in my github account. So now the Jenkins can pull the repo.
     
     
