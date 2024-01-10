@@ -1,0 +1,54 @@
+pipeline {
+    agent any
+    
+    environment {
+        REPO_URL = 'git@github.com:roychandrasekhar/flask-welcome.git'
+        DOCKER_IMAGE_NAME = 'flask-welcome:latest'
+        DOCKER_HUB_REPO = 'roychandrasekhar/flask-welcome'
+        DOCKER_HUB_CREDENTIAL_ID = 'chandradockerhub'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                script {
+                    // Clean the existing directory
+                    sh 'rm -rf flask-welcome'
+            
+                    // Use the existing SSH key from the Jenkins host machine
+                    sh 'ssh-agent bash -c "ssh-add /home/jenkins/.ssh/id_rsa; git clone ${REPO_URL}"'
+                }
+            }
+        }
+
+        stage('Push Docker Image to Docker Hub') {
+            steps {
+                script {
+                    // Retrieve Docker Hub credentials from Jenkins credentials
+                    withCredentials([usernamePassword(credentialsId: DOCKER_HUB_CREDENTIAL_ID, usernameVariable: 'DOCKERHUB_USERNAME', passwordVariable: 'DOCKERHUB_PASSWORD')]) {
+                        // Log in to Docker Hub using the retrieved credentials
+                        sh "docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD"
+                        
+                        // Tag the Docker image with the Docker Hub repository
+                        sh "docker tag $DOCKER_IMAGE_NAME $DOCKER_HUB_REPO"
+
+                        // Push the Docker image to Docker Hub
+                        sh "docker push $DOCKER_HUB_REPO"
+                    }
+                    
+                }
+            }
+        }
+
+        // Add more stages as needed, such as testing, deployment, etc.
+    }
+
+    post {
+        always {
+            script {
+                // Display a message in the Jenkins console log
+                echo 'Pipeline completed successfully!'
+            }
+        }
+    }
+}
